@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Camera Stream App</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f0f0f0;
+        }
+        video {
+            width: 100%;
+            max-width: 600px;
+            height: auto;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        button {
+            padding: 15px 30px;
+            font-size: 18px;
+            cursor: pointer;
+            border: none;
+            border-radius: 5px;
+            background-color: #007bff;
+            color: white;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <h1>Camera Stream</h1>
+    <video id="video" autoplay playsinline></video>
+    <button id="toggleButton">Start Stream</button>
+
+    <script>
+        const video = document.getElementById('video');
+        const button = document.getElementById('toggleButton');
+        let streamActive = false;
+        let mediaStream = null;
+
+        button.addEventListener('click', async () => {
+            if (!streamActive) {
+                try {
+                    // Request camera access
+                    mediaStream = await navigator.mediaDevices.getUserMedia({ video: true });
+                    video.srcObject = mediaStream;
+                    button.textContent = 'Stop Stream';
+                } catch (error) {
+                    console.error('Error accessing the camera: ', error);
+                    alert('Could not access the camera. Please check permissions.');
+                }
+            } else {
+                // Stop the camera stream
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                    video.srcObject = null;
+                    button.textContent = 'Start Stream';
+                }
+            }
+            streamActive = !streamActive;
+        });
+    </script>
+</body>
+</html>
